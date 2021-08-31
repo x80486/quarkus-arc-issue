@@ -1,0 +1,64 @@
+#
+# https://quarkus.io/guides/config-reference
+# https://quarkus.io/guides/all-config
+---
+application:
+  key: "value"
+quarkus:
+  application:
+    name: "quarkus-arc-issue"
+  datasource:
+    db-kind: "h2"
+    jdbc:
+      url: "jdbc:h2:mem:quarkus_arc_issue;DB_CLOSE_DELAY=-1;MODE=PostgreSQL"
+      #url: "jdbc:h2:tcp://localhost/mem:java_quarkus_graphql" # ...doesn't work, what the hell?
+    username: "sa"
+  flyway:
+    clean-disabled: true
+    locations: "classpath:database/migration/"
+    migrate-at-start: true
+    validate-on-migrate: true
+  http:
+    enable-compression: true
+  log: # https://quarkus.io/guides/logging/
+    category:
+      "io.quarkus":
+        level: INFO
+      "org.acme":
+        level: INFO
+    console:
+      async: true
+      enable: true
+      json:
+        date-format: "yyyy-MM-dd HH:mm:ss,SSS"
+        exception-output-type: detailed_and_formatted
+    level: WARN
+  shutdown:
+    timeout: 300 # 5 minutes
+---
+"%dev":
+  quarkus:
+    console:
+      color: true
+    flyway:
+      clean-at-start: true
+      clean-disabled: false
+    log:
+      category:
+        "org.acme":
+          level: DEBUG
+        "org.jdbi.v3":
+          level: DEBUG
+      console:
+        darken: 1
+        format: "%d{yyyy-MM-dd HH:mm:ss,SSS} |- %-5p in %c:%L [%t] - %m%e%n"
+        json: false
+---
+"%prod":
+---
+"%test":
+  quarkus:
+    log:
+      category:
+        "org.acme":
+          level: WARN

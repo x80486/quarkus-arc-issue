@@ -1,0 +1,13 @@
+pluginManagement {
+  plugins {
+    id("io.quarkus").version("${settings.getProperty("quarkus.version")}")
+  }
+
+  repositories {
+    // mavenLocal() // Uncomment when needed
+    gradlePluginPortal()
+    mavenCentral()
+  }
+}
+
+rootProject.name = "quarkus-arc-issue"

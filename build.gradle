@@ -1,0 +1,61 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+import java.nio.charset.StandardCharsets
+
+plugins {
+  id("io.quarkus")
+  id("org.gradle.application")
+  id("org.gradle.eclipse")
+  id("org.gradle.idea")
+}
+
+group = "org.acme"
+version = "0.0.1"
+
+dependencies {
+  implementation(enforcedPlatform("io.quarkus:quarkus-universe-bom:${project.property("quarkus.version")}"))
+  implementation(enforcedPlatform("org.jdbi:jdbi3-bom:3.21.0"))
+
+  implementation("io.quarkus:quarkus-hibernate-validator")
+  implementation("io.quarkus:quarkus-smallrye-graphql")
+  implementation("org.jdbi:jdbi3-core")
+  implementation("org.jdbi:jdbi3-sqlobject")
+
+  runtimeOnly("io.quarkus:quarkus-config-yaml")
+  runtimeOnly("io.quarkus:quarkus-flyway")
+  runtimeOnly("io.quarkus:quarkus-jdbc-h2")
+  runtimeOnly("io.quarkus:quarkus-logging-json")
+  runtimeOnly("org.jboss.slf4j:slf4j-jboss-logmanager") // ...to use SLF4J instead
+
+  testImplementation("nl.jqno.equalsverifier:equalsverifier:3.7.1")
+  testImplementation("org.assertj:assertj-core:3.20.2")
+  testImplementation("io.quarkus:quarkus-junit5-mockito")
+  testImplementation("io.quarkus:quarkus-smallrye-graphql-client")
+}
+
+repositories {
+  mavenCentral()
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(JavaCompile) {
+  final def arguments = ["-parameters"]
+  options.compilerArgs.addAll(arguments)
+  options.encoding("${StandardCharsets.UTF_8}")
+}
+
+tasks.withType(Test) {
+  testLogging {
+    events = [TestLogEvent.FAILED, TestLogEvent.SKIPPED]
+    exceptionFormat = TestExceptionFormat.FULL
+    showCauses = true
+    showExceptions = true
+    showStackTraces = true
+  }
+  useJUnitPlatform()
+}
